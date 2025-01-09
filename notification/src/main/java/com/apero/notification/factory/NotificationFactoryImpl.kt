@@ -13,12 +13,17 @@ import com.apero.notification.getNotificationManager
 internal class NotificationFactoryImpl(private val context: Context) : NotificationFactory {
 
     override fun pushNotification(notificationContent: NotificationContent) {
-        Logger.i("pushed notification $notificationContent")
+        Logger.i("push Notification $notificationContent")
         val notification = createNotification(notificationContent)
         kotlin.runCatching {
-            context.getNotificationManager().notify(notificationContent.getNotifyId(), notification)
-        }.onFailure {
-            throw IllegalArgumentException("Create ${notificationContent::class.java.simpleName}.getBy(context: Context) exception with cause:${it.message}", it)
+            Logger.i("notification: $notification , canShow: ${notificationContent.canShowNotify()}")
+            if (notification != null && notificationContent.canShowNotify()) {
+                context.getNotificationManager()
+                    .notify(notificationContent.getNotifyId(), notification)
+                Logger.i("pushed notification $notificationContent")
+            }
+        }.onFailure { throwable ->
+            Logger.e("pushed notification $notificationContent fail $throwable")
         }
     }
 

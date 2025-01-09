@@ -77,7 +77,35 @@ internal class AlarmManagerNotifyExecutor private constructor() : NotificationEx
             calendarSetInDay.add(Calendar.DATE, reminderType.stepDay)
         }
 
-        alarmManager.set(AlarmManager.RTC_WAKEUP, calendarSetInDay.timeInMillis, intent)
+        val exactlyScheduleAction = {
+            intent.let {
+                alarmManager.setExact(
+                    AlarmManager.RTC_WAKEUP,
+                    calendarSetInDay.timeInMillis,
+                    it
+                )
+            }
+        }
+
+        val scheduleAction = {
+            intent.let {
+                alarmManager.set(
+                    AlarmManager.RTC_WAKEUP,
+                    calendarSetInDay.timeInMillis,
+                    it
+                )
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (alarmManager.canScheduleExactAlarms()) {
+                exactlyScheduleAction()
+            } else {
+                scheduleAction()
+            }
+        } else {
+            exactlyScheduleAction()
+        }
         Logger.d("push interval $type with ${calendarSetInDay.time} and repeat after one day")
     }
 

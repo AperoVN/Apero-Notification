@@ -11,4 +11,6 @@ abstract class NotificationContent(open val requestCodeReminder: Int) : Parcelab
     abstract fun getNotifyId(): Int
 
     abstract fun getBy(context: Context): Notification?
+
+    open fun canShowNotify() : Boolean = true
 }
