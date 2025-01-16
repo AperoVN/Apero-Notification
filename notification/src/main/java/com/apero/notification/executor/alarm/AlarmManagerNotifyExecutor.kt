@@ -35,7 +35,37 @@ internal class AlarmManagerNotifyExecutor private constructor() : NotificationEx
             Calendar.getInstance(Locale.ROOT).apply { set(Calendar.SECOND, 0) }.timeInMillis
         val timeNotifyAfter = reminderType.notifyTimeUnit.toMillis(reminderType.notifyTime)
         val timeToSetAlarm = calendarCurrentTime + timeNotifyAfter
-        alarmManager.set(AlarmManager.RTC_WAKEUP, timeToSetAlarm, intent)
+
+        val exactlyScheduleAction = {
+            intent.let {
+                alarmManager.setExact(
+                    AlarmManager.RTC_WAKEUP,
+                    timeToSetAlarm,
+                    it
+                )
+            }
+        }
+
+        val scheduleAction = {
+            intent.let {
+                alarmManager.set(
+                    AlarmManager.RTC_WAKEUP,
+                    timeToSetAlarm,
+                    it
+                )
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (alarmManager.canScheduleExactAlarms()) {
+                exactlyScheduleAction()
+            } else {
+                scheduleAction()
+            }
+        } else {
+            exactlyScheduleAction()
+        }
+
         Logger.d(
             "push after $type with $timeNotifyAfter milis trigger show at (${
                 Calendar.getInstance().apply {
