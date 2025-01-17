@@ -24,3 +24,4 @@ dependencyResolutionManagement {
 rootProject.name = "AperoNotification"
 include(":app")
 include(":notification")
+include(":triggerfile")
