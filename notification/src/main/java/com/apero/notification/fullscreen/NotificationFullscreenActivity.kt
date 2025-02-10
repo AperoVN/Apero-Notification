@@ -3,6 +3,7 @@ package com.apero.notification.fullscreen
 import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
@@ -89,7 +90,10 @@ abstract class NotificationFullscreenActivity : AppCompatActivity() {
                 val currentMinute: Int = cal.get(Calendar.MINUTE)
                 val formattedHour = String.format(Locale.ROOT, "%02d", currentHour)
                 val formattedMinute = String.format(Locale.ROOT, "%02d", currentMinute)
-                val dateFormat = SimpleDateFormat("EEEE, MMMM dd", Locale.ENGLISH)
+                val dateFormat = SimpleDateFormat(
+                    "EEEE, MMMM dd",
+                    Resources.getSystem().configuration.locales.get(0)
+                )
                 val date = dateFormat.format(Date())
                 updateDateTimeDisplayFullScreen(
                     TimeFullScreen(
